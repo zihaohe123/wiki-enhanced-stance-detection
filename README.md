@@ -1,8 +1,9 @@
-#Infusing Wikipedia Knowledge to Enhance Stance Detection
-###This repo is the implemention of our paper "Infusing Wikipedia Knowledge to Enhance Stance Detection", where we propose to utilize the background knowledge from Wikipedia about the target to improve stance detection.
+# Infusing Wikipedia Knowledge to Enhance Stance Detection
+
+### This repo is the implemention of our paper "Infusing Wikipedia Knowledge to Enhance Stance Detection", where we propose to utilize the background knowledge from Wikipedia about the target to improve stance detection.
 
 
-##Dataset Preparation
+## Dataset Preparation
 In this paper, we experiment on three datasets: [PStance](https://aclanthology.org/2021.findings-acl.208/), [COVID19-Stance](https://aclanthology.org/2021.acl-long.127/), and [VAST](https://aclanthology.org/2020.emnlp-main.717.pdf). 
 
 1. <em>VAST</em> is publicly available at [here](https://github.com/emilyallaway/zero-shot-stance/tree/master/data/VAST) and thus the data is also included in this repo.
@@ -10,10 +11,10 @@ In this paper, we experiment on three datasets: [PStance](https://aclanthology.o
 3. For <em>COVID19-Stance</em>, the author just made the tweet ids publicly available at [here](https://github.com/kglandt/stance-detection-in-covid-19-tweets/tree/main/dataset). To gain the tweet contents, you can either use Twitter API or contact the first author. After you have the data files, put them under <em>data/covid19-stance</em>
 
 
-##Installation
+## Installation
 Install [Pytorch](https://pytorch.org/get-started/locally/) and [Huggingface Transformers](https://huggingface.co/docs/transformers/installation).
 
-##Run
+## Run
 PStance, target-specific stance detection, Biden
 ```angular2html
 python run_pstance_biden.py
