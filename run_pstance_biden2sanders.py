@@ -54,41 +54,4 @@ if __name__ == '__main__':
               # f" > {file_name}"
 
     print(command)
-
-    hostname = socket.gethostname()
-    if 'discovery' in hostname:
-        if '0' not in gpu:
-            print('GPU Error!')
-            exit()
-        script = f"""#!/bin/bash
-#SBATCH --partition=gpu
-#SBATCH --nodes=1
-#SBATCH --cpus-per-task=4
-#SBATCH --gres=gpu:v100:{n_gpus}
-#SBATCH --mem=16GB
-#SBATCH --time=2:00:00
-
-{command}
-        """
-        with open('run.sh', 'w') as f:
-            f.write(script)
-        os.system('sbatch run.sh')
-
-    elif hostname == 'donut-submit01':
-        if '0' not in gpu:
-            print('GPU Error!')
-            exit()
-        script = f"""#!/bin/bash
-#SBATCH --partition=donut-default
-#SBATCH --nodes=1
-#SBATCH --cpus-per-task=2
-#SBATCH --gpus={n_gpus}
-#SBATCH --mem=4096
-
-{command}
-        """
-        with open('run.sh', 'w') as f:
-            f.write(script)
-        os.system('sbatch run.sh')
-    else:
-        os.system(command)
+    os.system(command)
