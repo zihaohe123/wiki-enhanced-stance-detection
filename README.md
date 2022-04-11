@@ -1,6 +1,6 @@
 # Infusing Wikipedia Knowledge to Enhance Stance Detection
 
-### This repo is the implemention of our paper "Infusing Wikipedia Knowledge to Enhance Stance Detection", where we propose to utilize the background knowledge from Wikipedia about the target to improve stance detection.
+his repo is the implemention of our [paper](https://arxiv.org/abs/2204.03839) "Infusing Wikipedia Knowledge to Enhance Stance Detection", where we propose to utilize the background knowledge from Wikipedia about the target to improve stance detection.
 
 
 ## Dataset Preparation
@@ -38,5 +38,13 @@ python run_vast.py
 
 
 ## Citation
+```angular2html
+@article{he2022infusing,
+  title={Infusing Wikipedia Knowledge to Enhance Stance Detection},
+  author={He, Zihao and Mokhberian, Negar and Lerman, Kristina},
+  journal={arXiv preprint arXiv:2204.03839},
+  year={2022}
+}
+```
 
 
