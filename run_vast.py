@@ -5,7 +5,7 @@ if __name__ == '__main__':
     data = ['vast', 'pstance', 'covid'][0]
     topic = ''
     batch_size = 32
-    epochs = 5
+    epochs = 50
     patience = 10
     lr = 2e-5
     l2_reg = 5e-5
@@ -55,3 +55,5 @@ if __name__ == '__main__':
 
     print(command)
     os.system(command)
+
+
