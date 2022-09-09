@@ -19,15 +19,19 @@ class Engine:
         np.random.seed(args.seed)
 
         print('Preparing data....')
-        print('Training data....')
-        train_loader = data_loader(args.data, 'train', args.topic, args.batch_size, model=args.model,
-                                   wiki_model=args.wiki_model)
-        print('Val data....')
-        val_loader = data_loader(args.data, 'val', args.topic, 2*args.batch_size, model=args.model,
-                                 wiki_model=args.wiki_model)
+        if args.inference == 0:
+            print('Training data....')
+            train_loader = data_loader(args.data, 'train', args.topic, args.batch_size, model=args.model,
+                                       wiki_model=args.wiki_model, n_workers=args.n_workers)
+            print('Val data....')
+            val_loader = data_loader(args.data, 'val', args.topic, 2*args.batch_size, model=args.model,
+                                     wiki_model=args.wiki_model, n_workers=args.n_workers)
+        else:
+            train_loader = None
+            val_loader = None
         print('Test data....')
         test_loader = data_loader(args.data, 'test', args.topic, 2*args.batch_size, model=args.model,
-                                  wiki_model=args.wiki_model)
+                                  wiki_model=args.wiki_model, n_workers=args.n_workers)
         print('Done\n')
 
         print('Initializing model....')
@@ -35,10 +39,18 @@ class Engine:
         model = BERTSeqClf(num_labels=num_labels, model=args.model, n_layers_freeze=args.n_layers_freeze,
                            wiki_model=args.wiki_model, n_layers_freeze_wiki=args.n_layers_freeze_wiki)
         model = nn.DataParallel(model)
+        if args.inference == 1:
+            if args.data != 'vast':
+                model_name = f"ckp/model_{args.data}.pt"
+            else:
+                model_name = f"ckp/model_{args.data}_{args.topic}.pt"
+            print('\nLoading checkpoint....')
+            state_dict = torch.load(model_name, map_location='cpu')
+            model.load_state_dict(state_dict)
+            print('Done\n')
         model.to(device)
 
-        from transformers import AdamW
-        optimizer = AdamW(model.parameters(), lr=args.lr, weight_decay=args.l2_reg)
+        optimizer = torch.optim.AdamW(model.parameters(), lr=args.lr, weight_decay=args.l2_reg)
         criterion = nn.CrossEntropyLoss(ignore_index=3)
 
         self.device = device
@@ -51,28 +63,34 @@ class Engine:
         self.args = args
 
     def train(self):
-        import copy
-        best_epoch = 0
-        best_epoch_f1 = 0
-        best_state_dict = copy.deepcopy(self.model.state_dict())
-        for epoch in range(self.args.epochs):
-            print(f"{'*' * 30}Epoch: {epoch + 1}{'*' * 30}")
-            loss = self.train_epoch()
-            f1, f1_favor, f1_against, f1_neutral = self.eval('val')
-            if f1 > best_epoch_f1:
-                best_epoch = epoch
-                best_epoch_f1 = f1
-                best_state_dict = copy.deepcopy(self.model.state_dict())
-            print(f'Epoch: {epoch+1}\tTrain Loss: {loss:.3f}\tVal F1: {f1:.3f}\n'
-                  f'Val F1_favor: {f1_favor:.3f}\tVal F1_against: {f1_against:.3f}\tVal F1_Neutral: {f1_neutral:.3f}\n'
-                  f'Best Epoch: {best_epoch+1}\tBest Epoch Val F1: {best_epoch_f1:.3f}\n')
-            if epoch - best_epoch >= self.args.patience:
-                break
+        if self.args.inference == 0:
+            import copy
+            best_epoch = 0
+            best_epoch_f1 = 0
+            best_state_dict = copy.deepcopy(self.model.state_dict())
+            for epoch in range(self.args.epochs):
+                print(f"{'*' * 30}Epoch: {epoch + 1}{'*' * 30}")
+                loss = self.train_epoch()
+                f1, f1_favor, f1_against, f1_neutral = self.eval('val')
+                if f1 > best_epoch_f1:
+                    best_epoch = epoch
+                    best_epoch_f1 = f1
+                    best_state_dict = copy.deepcopy(self.model.state_dict())
+                print(f'Epoch: {epoch+1}\tTrain Loss: {loss:.3f}\tVal F1: {f1:.3f}\n'
+                      f'Val F1_favor: {f1_favor:.3f}\tVal F1_against: {f1_against:.3f}\tVal F1_Neutral: {f1_neutral:.3f}\n'
+                      f'Best Epoch: {best_epoch+1}\tBest Epoch Val F1: {best_epoch_f1:.3f}\n')
+                if epoch - best_epoch >= self.args.patience:
+                    break
 
-        print('Saving the best checkpoint....')
-        # torch.save(self.model.state_dict(), 'ckp/model.pt')   # uncomment this line to save the ckp
-        self.model.load_state_dict(best_state_dict)
-        torch.save(best_state_dict, f"ckp/model_{self.args.data}.pt")
+            print('Saving the best checkpoint....')
+            self.model.load_state_dict(best_state_dict)
+            if self.args.data != 'vast':
+                model_name = f"ckp/model_{self.args.data}.pt"
+            else:
+                model_name = f"ckp/model_{self.args.data}_{self.args.topic}.pt"
+            torch.save(best_state_dict, model_name)
+
+        print('Inference...')
         if self.args.data != 'vast':
             f1_avg, f1_favor, f1_against, f1_neutral = self.eval('test')
             print(f'Test F1: {f1_avg:.3f}\tTest F1_Favor: {f1_favor:.3f}\t'

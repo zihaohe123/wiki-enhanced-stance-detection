@@ -24,10 +24,13 @@ if __name__ == '__main__':
     parser.add_argument('--wiki_model', type=str, choices=('', 'bert-base'), default='')
     parser.add_argument('--n_layers_freeze_wiki', type=int, default=0)
     parser.add_argument('--gpu', type=str, default='')
+    parser.add_argument('--n_workers', type=int, default=4)
+    parser.add_argument('--inference', type=int, default=0, help='if doing inference or not')
 
     parser.add_argument('--seed', type=int, default=42)
 
     args = parser.parse_args()
+    print(args)
 
     engine = Engine(args)
     engine.train()

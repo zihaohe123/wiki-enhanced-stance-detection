@@ -4,6 +4,7 @@ from torch.utils.data import Dataset, DataLoader
 import pandas as pd
 import numpy as np
 import pickle
+os.environ['TOKENIZERS_PARALLELISM'] = '0'
 
 
 # P-Stance: A Large Dataset for Stance Detection in Political Domain
@@ -132,7 +133,7 @@ class COVIDTweetStance(Dataset):
                 else:  #  'covid-twitter-bert':
                     tokenizer_wiki = AutoTokenizer.from_pretrained('digitalepidemiologylab/covid-twitter-bert-v2')
 
-            if wiki_model == 'merge':
+            if wiki_model == model:
                 tweets_targets = [f'text: {x} target: {y}' for x, y in zip(tweets, targets)]
                 encodings = tokenizer(tweets_targets, [wiki_summary] * df.shape[0], padding=True, truncation=True)
                 encodings_wiki = {'input_ids': [[0]] * df.shape[0], 'attention_mask': [[0]] * df.shape[0]}
@@ -284,7 +285,7 @@ class VASTZeroFewShot(Dataset):
         return self.stances.shape[0]
 
 
-def data_loader(data, phase, topic, batch_size, model='bert-base', wiki_model=''):
+def data_loader(data, phase, topic, batch_size, model='bert-base', wiki_model='', n_workers=4):
     shuffle = True if phase == 'train' else False
     if data == 'vast':
         dataset = VASTZeroFewShot(phase, model=model, wiki_model=wiki_model)
@@ -293,5 +294,5 @@ def data_loader(data, phase, topic, batch_size, model='bert-base', wiki_model=''
     else:
         dataset = COVIDTweetStance(phase, topic, model, wiki_model=wiki_model)
 
-    loader = DataLoader(dataset, batch_size=batch_size, shuffle=shuffle)
+    loader = DataLoader(dataset, batch_size=batch_size, shuffle=shuffle, num_workers=n_workers)
     return loader

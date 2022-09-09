@@ -11,9 +11,10 @@ if __name__ == '__main__':
     l2_reg = 5e-5
     model = ['bert-base', 'bertweet', 'covid-twitter-bert'][0]
     wiki_model = ['', 'bert-base'][1]
-    n_layers_freeze = 0
-    n_layers_freeze_wiki = 10
-    gpu = '0,1,2,3'
+    n_layers_freeze = 10
+    n_layers_freeze_wiki = 0
+    gpu = '0'
+    inference = 0
 
     if wiki_model == model:
         n_layers_freeze_wiki = n_layers_freeze
@@ -50,10 +51,9 @@ if __name__ == '__main__':
               f"--patience={patience} " \
               f"--lr={lr} " \
               f"--l2_reg={l2_reg} " \
-              f"--gpu={gpu}" \
+              f"--gpu={gpu} " \
+              f"--inference={inference} " \
               # f" > {file_name}"
 
     print(command)
     os.system(command)
-
-
