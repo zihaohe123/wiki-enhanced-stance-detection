@@ -39,10 +39,11 @@ python run_vast.py
 
 ## Citation
 ```angular2html
-@article{he2022infusing,
-  title={Infusing Wikipedia Knowledge to Enhance Stance Detection},
+@inproceedings{he2022infusing,
+  title={Infusing Knowledge from Wikipedia to Enhance Stance Detection},
   author={He, Zihao and Mokhberian, Negar and Lerman, Kristina},
-  journal={arXiv preprint arXiv:2204.03839},
+  booktitle={Proceedings of the 12th Workshop on Computational Approaches to Subjectivity, Sentiment \& Social Media Analysis},
+  pages={71--77},
   year={2022}
 }
 ```
