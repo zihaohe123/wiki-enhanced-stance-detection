@@ -1,6 +1,6 @@
 # Infusing Wikipedia Knowledge to Enhance Stance Detection
 
-his repo is the implemention of our [paper](https://arxiv.org/abs/2204.03839) "Infusing Wikipedia Knowledge to Enhance Stance Detection", where we propose to utilize the background knowledge from Wikipedia about the target to improve stance detection.
+This repo is the implemention of our [paper](https://arxiv.org/abs/2204.03839) "Infusing Wikipedia Knowledge to Enhance Stance Detection", where we propose to utilize the background knowledge from Wikipedia about the target to improve stance detection.
 
 
 ## Dataset Preparation
